@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
 import useAuth from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header/Header';
@@ -8,13 +7,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // images
 import google from './g-logo.png';
 import facebook from './f-logo.png';
+import Spinner from '../Spinner';
 
 
 const SignUp = () => {
   //initializations
-  const navigate = useNavigate();
   const [error, setError] = useState('');
-  const { signUpUsingGoogle, signUpUsingFacebook, setIsLoading } = useAuth();
+  const { signUpUsingGoogle, signUpUsingFacebook, setLogged, loading, setLoading } = useAuth();
 
 
   //handling manual sign up form
@@ -25,6 +24,7 @@ const SignUp = () => {
   const passwordRef2 = useRef();
 
   function handleSignUp(e) {
+    setLoading(true);
     e.preventDefault();
 
     const name = nameRef.current.value;
@@ -36,19 +36,41 @@ const SignUp = () => {
     if (password === password2) {
       const user = { name: name, username: username, email: email, password: password }
 
-      fetch('http://eyafi.pythonanywhere.com/account/user/', {
+      fetch('https://eyafi.pythonanywhere.com/account/user/', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(user)
       })
         .then(response => response.json())
-        .then(data => data.id ? navigate("/update-profile") : setError("ভুল হয়েছে"));
+        .then(data => {
+          setLoading(false);
+          if (data.id) {
+
+            fetch('https://eyafi.pythonanywhere.com/account/token/', {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body: JSON.stringify({ email: email, password: password })
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.access) {
+                  setLogged({ refresh: data.refresh, access: data.access });
+                  localStorage.setItem("refresh", data.refresh);
+                  localStorage.setItem("access", data.access);
+                } else {
+                  setError("ভুল হয়েছে");
+                }
+              });
+          } else {
+            setError("ভুল হয়েছে");
+          }
+        });
     }
     else {
       setError("আপনার পাসওয়ার্ড অনিশ্চিত");
     }
-
-
   }
 
 
@@ -79,14 +101,14 @@ const SignUp = () => {
         setError("পাসওয়ার্ড লিখুন");
 
       })
-      .catch((error) => { })
+      .catch((error) => console.log(error))
   }
 
   // ---
 
 
   return (
-    <div className="h-screen mx-auto mt-12">
+    <div className="h-screen mx-auto">
       <Header></Header>
 
       <div className="container mx-auto">
@@ -137,10 +159,15 @@ const SignUp = () => {
               </label>
               <input type="password" ref={passwordRef2} className=" border w-full p-1 my-1" name="password" />
             </div>
+            {
+              loading ?
+                <Spinner></Spinner>
+                :
+                <div className="text-center p-1 ">
+                  <button type="submit" className="bg-red-600 text-white shadow p-3 my-3 rounded-md">শুরু করা যাক</button>
+                </div>
+            }
 
-            <div className="text-center p-1 ">
-              <button type="submit" className="bg-red-600 text-white shadow p-3 my-3 rounded-md">শুরু করা যাক</button>
-            </div>
 
           </form>
 

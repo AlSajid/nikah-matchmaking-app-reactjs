@@ -7,14 +7,23 @@ const Header = () => {
   const { logged, logout } = useAuth();
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-red-600">
+    <div className=" bg-red-600">
       <div className=" mx-auto  bg-opacity-95 h-14 grid grid-cols-2">
 
         {/* header icon/left portion */}
         <div className=" text-white p-3">
-          <Link to="/">
-            <h1 className=" text-3xl tarunya">নিকাহ</h1>
-          </Link>
+          {
+            logged.access ?
+              <Link to="/base">
+                <h1 className=" text-3xl tarunya">নিকাহ</h1>
+              </Link>
+              :
+              <Link to="/">
+                <h1 className=" text-3xl tarunya">নিকাহ</h1>
+              </Link>
+          }
+
+
         </div>
 
         {/* header right portion */}

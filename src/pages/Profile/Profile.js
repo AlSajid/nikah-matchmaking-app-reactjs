@@ -1,83 +1,165 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Header from '../../components/Header/Header';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
-const Profile = () => {
-    const { user, profile } = useAuth();
-    console.log(user, profile);
-    const location = useLocation();
-    const url = profile.image;
-    const dp = {
-        backgroundImage: `url(${url})`,
-        backgroundPosition: "50% 50%",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "auto 100%",
-    };
+const Profile = (props) => {
+  const { user } = useAuth();
+  const [thisUser, setThisUser] = useState({});
+  const [thisProfile, setThisProfile] = useState({});
+  const [visibility, setVisibility] = useState(false);
+  console.log(visibility);
 
 
-    return (
-        <section className="bg-gray-100 p-5 h-screen" id="profile">
-            <Header></Header>
-            <div className="container mx-auto h-full mt-16">
-                <div className="grid md:grid-cols-2 sm:grid-cols-1 container ">
-                    <div style={dp} className="container shadow h-full bg-red-900" id="image">
+  useEffect(() => {
+    fetch(`https://eyafi.pythonanywhere.com/account/profile/${props.id}`)
+      .then(response => response.json())
+      .then(data => setThisProfile(data))
+      .catch(error => console.log(error));
 
-                    </div>
-                    <div className="shadow">
-                        <div className="p-3 self-center bg-white w-full">
-                            <div className="p-3 m-3">
-                                <h3 className="text-3xl"><b>{user.name}</b></h3>
-                                <p className="m-3 text-lg">{profile.bio}</p>
-                            </div>
-                            <div className="p-3 my-3 rounded-3xl text-white ">
-                                <div className="m-3 px-5 py-3  rounded-full   bg-gray-900 border inline-block">
-                                    <p>{profile.blood_group}</p>
-                                </div>
-                                <div className="m-3 px-5 py-3 rounded-full bg-yellow-900 border inline-block">
-                                    <p>{profile.workplace}</p>
-                                </div>
-                                <div className="m-3 px-5 py-3 rounded-full bg-green-900 border inline-block ">
-                                    <p>{profile.religion}</p>
-                                </div>
-                                <div className="m-3 px-5 py-3 rounded-full bg-blue-900 border inline-block">
-                                    <p>{profile.skin_tone}</p>
-                                </div>
-                                <div className="m-3 p-3">
-                                    <p className="text-xl font-bold">
-
-                                        <span className="text-yellow-500 block p-1">
-                                            জেলা {profile.present_address_district},
-                                            <br />
-                                            বিভাগ {profile.present_address_division}</span>
-                                    </p>
-                                </div>
-                            </div>
+    fetch(`https://eyafi.pythonanywhere.com/account/user/${props.id}`)
+      .then(response => response.json())
+      .then(data => setThisUser(data))
+      .catch(error => console.log(error));
+  }, [props.id])
 
 
-                        </div>
-                    </div>
-                    {/* {
-                        (location === "profile")
-                            ?
-                            <div className="text-center p-3 bg-red-900 w-full">
-                                <Link to="/edit-profile">
-                                    <button className="border p-3 m-3 rounded shadow-lg hover:shadow-2xl bg-red-600 text-white text-xl">তথ্য সম্পাদন</button>
-                                </Link>
-                            </div>
-                            :
-                            <div className="text-center p-3">
-                                <button className="border p-3 m-3 rounded shadow-lg hover:shadow-2xl bg-red-900 text-white text-xl">ভালো লেগেছে</button>
+  const url = thisProfile.image;
+  const location = useLocation();
+  const { serial, setSerial } = useAuth();
 
-                                <button className="border p-3 m-3 rounded shadow-lg hover:shadow-2xl bg-gray-900 text-white text-xl">পরবর্তী জন</button>
-                            </div>
+  const dp = {
+    backgroundImage: `url(${url})`,
+    backgroundPosition: "50% 0",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "100% auto",
+  };
 
-                    } */}
+  const like = () => {
+    setSerial(serial + 1);
+    localStorage.setItem("serial", serial + 1);
 
+    const match = { who: user.id, toWhom: props.id, name: user.name };
+
+    fetch('https://eyafi.pythonanywhere.com/account/matching/', {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(match),
+    })
+      .then(response => response.json())
+      .then(data => console.log(data));
+  }
+
+
+  const year = new Date().getFullYear();
+
+  const age = String(year - parseInt(thisProfile?.dateOfBirth?.substring(0, 4)));
+
+
+
+  return (
+    <section className="" id="profile">
+      <div className="container mx-auto h-screen">
+
+
+        <div className=" container h-4/5">
+
+          {/* image */}
+          <div style={dp} className="container h-96 w-96 mx-auto relative" id="image">
+
+            {
+              (location.pathname === "/profile")
+                ?
+                <div className="text-center absolute bottom-0 left-0 right-0">
+                  {/* <Link to="/update-profile">
+                    <button className="border p-3 m-3 rounded shadow-lg hover:shadow-2xl bg-red-600 text-white text-xl">তথ্য সম্পাদন</button>
+                  </Link> */}
                 </div>
+                :
+                <div className="text-center absolute bottom-0 left-0 right-0">
+                  <button
+                    className="text-3xl text-white bg-green-600 p-3 m-3 rounded-full shadow-lg hover:shadow-2xl"
+                    onClick={like}>
+                    <FontAwesomeIcon icon="check-circle" />
+                  </button>
+
+                  <button className="text-3xl text-white bg-red-600 p-3 m-3 rounded-full shadow-lg hover:shadow-2xl"
+                    onClick={() => { setSerial(serial + 1); localStorage.setItem("serial", serial + 1) }}>
+                    <FontAwesomeIcon icon="times-circle" />
+                  </button>
+                </div>
+
+            }
+          </div>
+
+          <div className="p-3 lg:w-1/2 mx-auto ">
+            <div className="p-3 m-3 text-center">
+              <h3 className="text-3xl"><b>{thisUser.name}</b></h3>
+              <p className="m-3 text-lg">{thisProfile.bio}</p>
             </div>
-        </section >
-    );
+
+            <div className=''>
+              <div className='border-b-2 p-3'>
+                <h6><b>বর্তমান ঠিকানাঃ</b> {thisProfile.present_address_district}, {thisProfile.present_address_division}</h6>
+              </div>
+              <div className='border-b-2 p-3'>
+                <h6><b>শিক্ষাগত যোগ্যতাঃ </b> {thisProfile.educational_qualification}</h6>
+              </div>
+              <div className='border-b-2 p-3'>
+                <h6><b>পেশাঃ</b> {thisProfile.profession}, {thisProfile.workplace}</h6>
+              </div>
+            </div>
+
+
+            {
+              (visibility === true) ?
+                < div >
+                  <div className='border-b-2 p-3'>
+                    <h6><b>বয়সঃ</b> <span className='number text-xl'>{age}</span> বছর</h6>
+                  </div>
+                  <div className='border-b-2 p-3'>
+                    <h6><b>উচ্চতাঃ</b>
+                      <span className='number text-xl'> {parseInt(thisProfile.height / 12)}</span> ফুট
+                      <span className='number text-xl'> {thisProfile.height % 12}</span> ইঞ্চি
+                    </h6>
+                  </div>
+                  <div className='border-b-2 p-3'>
+                    <h6><b>ওজনঃ</b> <span className='number text-xl'>{thisProfile.weight}</span> কেজি</h6>
+                  </div>
+                  <div className='border-b-2 p-3'>
+                    <h6><b>ধর্মঃ</b> {thisProfile.religion}</h6>
+                  </div>
+                  <div className='border-b-2 p-3'>
+                    <h6><b>বৈবাহিক অবস্থাঃ </b> {thisProfile.marital_status} </h6>
+                  </div>
+                  <div className='border-b-2 p-3'>
+                    <h6><b>রক্তের গ্রুপঃ </b> {thisProfile.blood_group} </h6>
+                  </div>
+
+
+                  <div className='border-b-2 p-3'>
+                    <h6><b>বার্ষিক আয়ঃ</b> {thisProfile.yearly_income} টাকা</h6>
+                  </div>
+                  <div className='border-b-2 p-3'>
+                    <h6><b>গায়ের রঙঃ </b> {thisProfile.skin_tone}</h6>
+                  </div>
+
+                  <div className='border-b-2 p-3'>
+                    <h6><b>স্থায়ী ঠিকানা</b> {thisProfile.permanent_address_district}, {thisProfile.permanent_address_division}</h6>
+                  </div>
+                </div>
+                :
+                <button className='p-1 my-3 w-full border-2 font-semibold shadow'
+                  onClick={() => {setVisibility(true)}}>বিস্তারিত দেখুন</button>
+
+            }
+          </div>
+        </div>
+      </div>
+    </section >
+  );
 };
 
 export default Profile;

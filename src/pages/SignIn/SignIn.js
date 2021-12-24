@@ -1,35 +1,27 @@
 import React, { useRef, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
-import { useLocation, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Spinner from '../Spinner';
 
 
 
 function SignIn() {
-  const { setLogged } = useAuth();
-
-
+  const { setLogged, loading,setLoading } = useAuth();
   const [error, setError] = useState('');
-
-  const location = useLocation();
-  const navigate = useNavigate();
-
-
-
-  const redirectURL = location.state?.from || '/base';
 
   const emailRef = useRef();
   const passwordRef = useRef();
 
   function handleSignIn(e) {
+    setLoading(true);
+
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     const user = { email: email, password: password }
 
-
-    fetch('http://eyafi.pythonanywhere.com/account/token/', {
+    fetch('https://eyafi.pythonanywhere.com/account/token/', {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
@@ -38,23 +30,24 @@ function SignIn() {
     })
       .then(response => response.json())
       .then(data => {
+        setLoading(false);
         if (data.access) {
-          setLogged({refresh: data.refresh, access: data.access});
-
+          
+          setLogged({ refresh: data.refresh, access: data.access });
           localStorage.setItem("refresh", data.refresh);
           localStorage.setItem("access", data.access);
-          navigate(redirectURL);
         } else {
-          setError("ভুল হয়েছে")
+          setError("ভুল হয়েছে");
         }
       });
+
     e.preventDefault();
   }
 
   return (
     <div className="bg-gray-50">
       <Header></Header>
-      <div className="container mx-auto mt-16">
+      <div className="container mx-auto">
         <div className="bg-white lg:w-1/3 md:w-1/2 sm:w-full p-1 mx-auto">
 
           <div>
@@ -79,9 +72,15 @@ function SignIn() {
               <input type="password" ref={passwordRef} className=" border w-full p-1 my-1" name="password" />
             </div>
 
-            <div className="text-center p-3 m-3">
-              <button type="submit" className="bg-red-600 text-white shadow p-3 rounded-md">প্রবেশ</button>
-            </div>
+            {loading ?
+              <Spinner></Spinner>
+              :
+              <div className="text-center p-3 m-3">
+                <button type="submit" className="bg-red-600 text-white shadow p-3 rounded-md">প্রবেশ</button>
+              </div>
+            }
+
+
 
           </form>
 

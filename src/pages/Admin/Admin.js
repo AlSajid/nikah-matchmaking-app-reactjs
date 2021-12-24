@@ -4,21 +4,19 @@ const Admin = () => {
   const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
-    fetch(`http://eyafi.pythonanywhere.com/account/user/`)
+    fetch(`https://eyafi.pythonanywhere.com/account/user/`)
       .then(response => response.json())
       .then(data => setAllUsers(data));
   }, [allUsers]);
 
-
-
   const handleDeleteButton = (id) => {
 
-    const url = `http://eyafi.pythonanywhere.com/account/user/${id}`;
-    console.log(url);
+    let url = `https://eyafi.pythonanywhere.com/account/user/${id}`;
 
-    fetch(url, {method: 'DELETE'})
+    fetch(url, { method: 'DELETE' })
       .then(response => response.json())
       .then(data => console.log(data));
+
   }
 
   return (

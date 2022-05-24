@@ -20,6 +20,7 @@ import EditProfile from './pages/UpdateProfile/EditProfile';
 import MyProfile from './pages/MyProfile';
 import Search from './pages/Search';
 import Interested from './pages/Interested';
+import Chat from './pages/Chat';
 
 library.add(fab, fas)
 
@@ -42,6 +43,12 @@ function App() {
           <Route path="interested" element={
             <PrivateRoute>
               <Interested />
+            </PrivateRoute>
+          } />
+
+          <Route path="chat" element={
+            <PrivateRoute>
+              <Chat />
             </PrivateRoute>
           } />
 

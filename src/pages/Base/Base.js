@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import Offer from '../Offer';
-
+   
 
 const Base = () => {
   const { user, logout, interest } = useAuth();
@@ -14,32 +14,38 @@ const Base = () => {
         <div className="text-center bg-red-600 text-white">
           <h1 className="p-3 text-3xl tarunya">নিকাহ</h1>
         </div>
+        <div className=''>
+          <button
+            className="font-bold p-3 w-full rounded text-xl border-b-2 shadow border-red-600"
+            onClick={() => { navigate("/profile") }}>
+            <FontAwesomeIcon icon="user-circle" /> {user.name}
+          </button>
 
-        {/* profile */}
+          <button
+            className=" p-3 w-full rounded text-xl border-b-2 shadow border-red-600"
+            onClick={() => { navigate("/search") }}>
+            <FontAwesomeIcon icon="search" /> খুঁজুন
+          </button>
 
-        <button
-          className="font-bold p-3 w-full rounded text-xl border-b-2 shadow border-red-600"
-          onClick={() => { navigate("/profile") }}>
-          <FontAwesomeIcon icon="user-circle" /> {user.name}
-        </button>
+          <button
+            className=" p-3 w-full rounded text-xl border-b-2 shadow border-red-600"
+            onClick={() => { navigate("/interested") }}>
+            <FontAwesomeIcon icon="grin-hearts" /> আগ্রহী <span className='number font-semibold text-2xl text-red-600'>({interest.length})</span>
+          </button>
 
-        <button
-          className=" p-3 w-full rounded text-xl border-b-2 shadow border-red-600"
-          onClick={() => { navigate("/search") }}>
-          <FontAwesomeIcon icon="search" /> খুঁজুন
-        </button>
+          <button
+            className="border-b-2 shadow border-red-600 p-3 w-full rounded text-xl"
+            onClick={() => { navigate("/chat") }}>
+            <FontAwesomeIcon icon="comments" /> বার্তা
+          </button>
 
-        <button
-          className=" p-3 w-full rounded text-xl border-b-2 shadow border-red-600"
-          onClick={() => { navigate("/interested") }}>
-          <FontAwesomeIcon icon="grin-hearts" /> আগ্রহী <span className='number font-semibold text-2xl text-red-600'>({interest.length})</span>
-        </button>
+          <button
+            className="border-b-2 shadow border-red-600 p-3 w-full rounded text-xl"
+            onClick={() => logout()}>
+            <FontAwesomeIcon icon="sign-out-alt" /> প্রস্থান
+          </button>
 
-        <button
-          className="border-b-2 shadow border-red-600 p-3 w-full rounded text-xl"
-          onClick={() => logout()}>
-          <FontAwesomeIcon icon="sign-out-alt" /> প্রস্থান
-        </button>
+        </div>
 
       </div>
 

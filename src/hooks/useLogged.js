@@ -58,7 +58,7 @@ const useLogged = () => {
         .catch(error => console.log(error));
     }
 
-  }, [logged, interest]);
+  }, [logged.access]);
 
 
   const auth = getAuth();

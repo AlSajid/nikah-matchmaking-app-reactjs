@@ -8,7 +8,7 @@ import Spinner from '../Spinner';
 
 
 function SignIn() {
-  const { setLogged, loading,setLoading } = useAuth();
+  const { setLogged, loading, setLoading } = useAuth();
   const [error, setError] = useState('');
 
   const emailRef = useRef();
@@ -32,7 +32,7 @@ function SignIn() {
       .then(data => {
         setLoading(false);
         if (data.access) {
-          
+
           setLogged({ refresh: data.refresh, access: data.access });
           localStorage.setItem("refresh", data.refresh);
           localStorage.setItem("access", data.access);
@@ -46,30 +46,34 @@ function SignIn() {
 
   return (
     <div className="bg-gray-50">
-      <Header></Header>
-      <div className="container mx-auto">
-        <div className="bg-white lg:w-1/3 md:w-1/2 sm:w-full p-1 mx-auto">
 
-          <div>
-            <h5 className="text-red-600 text-center text-5xl py-3 tarunya">প্রবেশ পাতা</h5>
-          </div>
-          <div className="text-center bg-red-900 my-3 rounded-md text-white p-1">
-            {error}
+      {/* Nikah Basic Header */}
+      <Header></Header>
+
+      {/* login body */}
+      <div className="container mx-auto">
+
+        {/* login form */}
+        <div className="bg-white lg:w-1/3 md:w-1/2 sm:w-full p-3 mx-auto">
+
+          <h5 className="text-red-600 text-center text-3xl py-3 tarunya">প্রবেশ পাতা</h5>
+
+          <div className="text-center bg-red-900 my-3 rounded-md text-white">
+            <span className='m-3'>{error}</span>
           </div>
 
           <form autoComplete="off" onSubmit={handleSignIn}>
 
-            <div className="p-1 my-3">
-              <label htmlFor="email" className="font-semibold">
-                <FontAwesomeIcon icon="at" /> ইমেইল</label>
-              <input type="email" ref={emailRef} className="border w-full p-1 my-1" name="email" />
+            <div className="p-3 my-3">
+              <label htmlFor="email" className="font-semibold"><FontAwesomeIcon icon="at" /> ইমেইল</label>
+              <input type="email" ref={emailRef} className="border w-full p-3 my-3 rounded" name="email" />
             </div>
 
-            <div className="p-1 my-3">
+            <div className="p-3 my-3">
               <label htmlFor="password" className="font-semibold">
                 <FontAwesomeIcon icon="key" /> পাসওয়ার্ড
               </label>
-              <input type="password" ref={passwordRef} className=" border w-full p-1 my-1" name="password" />
+              <input type="password" ref={passwordRef} className=" border w-full p-3 my-3" name="password" />
             </div>
 
             {loading ?
